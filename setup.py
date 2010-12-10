@@ -8,5 +8,5 @@ setup(name="django-sanitizer",
       description="Django template filter application for sanitizing user submitted HTML",
       author="Calvin Spealman",
       url="http://github.com/caktus/django-sanitizer",
-      packages=['sanitizer'],
+      packages=['sanitizer', 'sanitizer.templatetags'],
       )
