@@ -12,4 +12,12 @@ to allow definition of an onclick attribute:
 
     ALLOWED_TAGS = "a:href,name"
 
+In your templates, sanitizing is easy.
+
+    {% load sanitizer %}
+
+    {{ user_comment|allowtags|safe }}
+
+    {{ user_comment|allowtags:"b i"|safe }}
+
 Disallowed tags or attributes are simply removed.
