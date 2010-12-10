@@ -12,7 +12,7 @@ register = template.Library()
 def allowtags(value, allowed=None):
     """Allows only whitelisted tags and attributes through.
 
-    The setting FORUM_ALLOWED_TAGS can override the behavior. The syntax of
+    The setting ALLOWED_TAGS can override the behavior. The syntax of
     this setting is a space-separated list of tags, which are optionally
     followed by a colon and a comma-separated list of attribute permitted in
     the tag.
@@ -20,13 +20,13 @@ def allowtags(value, allowed=None):
     For example, to allow <a> tags which are links or named anchors, but not
     to allow definition of an onclick attribute:
 
-        FORUM_ALLOWED_TAGS = "a:href,name"
+        ALLOWED_TAGS = "a:href,name"
 
     Disallowed tags or attributes are simply removed.
     """
 
     if allowed is None:
-        allowed = getattr(settings, "FORUM_ALLOWED_TAGS",
+        allowed = getattr(settings, "ALLOWED_TAGS",
             "a:href b i ul ol li p br")
 
     valid_tag_defs = allowed.split()
