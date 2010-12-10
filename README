@@ -1,3 +1,5 @@
+**NOTE: Please try to break this and tell me where it is insufficent.**
+
 Allows only whitelisted tags and attributes through.
 
 The setting ALLOWED_TAGS can override the behavior. The syntax of
