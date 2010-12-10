@@ -1,8 +1,9 @@
 from django import template
 from django.template.defaultfilters import stringfilter
+from django.utils.html import escape
 from django.conf import settings
 
-from BeautifulSoup import BeautifulSoup, Comment
+from BeautifulSoup import BeautifulSoup, Comment, NavigableString
 
 register = template.Library()
 
@@ -44,9 +45,16 @@ def allowtags(value, allowed=None):
         text=lambda text: isinstance(text, Comment)):
         comment.extract()
     for tag in soup.findAll(True):
+        _escape_text_nodes(tag)
         if tag.name not in valid_tags:
             tag.hidden = True
         else:
             tag.attrs = [(attr, val) for attr, val in tag.attrs
                          if attr in valid_tags[tag.name]]
+    _escape_text_nodes(soup)
     return soup.renderContents().decode('utf8').replace('javascript:', '')
+
+def _escape_text_nodes(tag):
+    for i, child in enumerate(tag.contents):
+        if isinstance(child, NavigableString):
+            child.parent.contents[i] = NavigableString(escape(child))

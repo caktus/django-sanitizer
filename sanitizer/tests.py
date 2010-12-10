@@ -46,3 +46,19 @@ class SanitizerTest(TestCase):
     
         cleaned = allowtags("<blink>test</blink>", "")
         self.assertEqual(cleaned, 'test')
+
+    def test_unclosed_disallowed_removed(self):
+
+        cleaned = allowtags("<b>test", "a")
+        self.assertEqual(cleaned, 'test')
+
+    def test_unclosed_trailing_disallowed_removed(self):
+    
+        cleaned = allowtags("<b>test<b>", "a")
+        self.assertEqual(cleaned, "test")
+
+    def test_dirty_tricks(self):
+        
+        self.assertEqual(
+            allowtags('<<script></script>script>test<<script></script>script>'),
+            '&lt;script&gt;test&lt;script&gt;')
