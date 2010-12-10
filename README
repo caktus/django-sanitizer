@@ -1,0 +1,13 @@
+Allows only whitelisted tags and attributes through.
+
+The setting ALLOWED_TAGS can override the behavior. The syntax of
+this setting is a space-separated list of tags, which are optionally
+followed by a colon and a comma-separated list of attribute permitted in
+the tag.
+
+For example, to allow <a> tags which are links or named anchors, but not
+to allow definition of an onclick attribute:
+
+    ALLOWED_TAGS = "a:href,name"
+
+Disallowed tags or attributes are simply removed.
