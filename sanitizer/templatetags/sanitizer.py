@@ -1,6 +1,7 @@
 from django import template
 from django.template.defaultfilters import stringfilter
-from django.utils.html import escape
+from django.utils.html import fix_ampersands
+from django.utils.safestring import mark_safe
 from django.conf import settings
 
 from BeautifulSoup import BeautifulSoup, Comment, NavigableString
@@ -25,7 +26,7 @@ def allowtags(value, allowed=None):
 
     Disallowed tags or attributes are simply removed.
     """
-
+    
     if allowed is None:
         allowed = getattr(settings, "ALLOWED_TAGS",
             "a:href b i ul ol li p br")
@@ -40,7 +41,7 @@ def allowtags(value, allowed=None):
             tag_name, allowed_attrs = tag_def.split(':')[0], ()
         valid_tags[tag_name] = allowed_attrs
 
-    soup = BeautifulSoup(value)
+    soup = BeautifulSoup(value, convertEntities=BeautifulSoup.HTML_ENTITIES)
     for comment in soup.findAll(
         text=lambda text: isinstance(text, Comment)):
         comment.extract()
@@ -52,9 +53,33 @@ def allowtags(value, allowed=None):
             tag.attrs = [(attr, val) for attr, val in tag.attrs
                          if attr in valid_tags[tag.name]]
     _escape_text_nodes(soup)
-    return soup.renderContents().decode('utf8').replace('javascript:', '')
+    return mark_safe(soup.renderContents().decode('utf8').replace('javascript:', ''))
+
+
+@register.filter(name="maptags")
+@stringfilter
+def maptags(value, mapping):
+    """Maps between given and expected tag names.
+
+    For example, to down-shift headers.
+    
+        {{ text|maptags:"h4=h5 h3=h4 h2=h3 h1=h2" }}
+    """
+
+    mapping = dict(m.split('=') for m in mapping.split())
+
+    soup = BeautifulSoup(value, convertEntities=BeautifulSoup.HTML_ENTITIES)
+    for tag in soup.findAll(True):
+        _escape_text_nodes(tag)
+        tag.name = mapping.get(tag.name, tag.name)
+    _escape_text_nodes(soup)
+
+    return mark_safe(soup.renderContents().decode('utf8'))
+
 
 def _escape_text_nodes(tag):
     for i, child in enumerate(tag.contents):
         if isinstance(child, NavigableString):
-            child.parent.contents[i] = NavigableString(escape(child))
+            t = fix_ampersands(child)
+            t = t.replace('<', '&lt;').replace('>', '&gt;')
+            child.parent.contents[i] = NavigableString(t)
