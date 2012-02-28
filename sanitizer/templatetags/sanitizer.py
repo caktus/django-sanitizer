@@ -9,6 +9,12 @@ from BeautifulSoup import BeautifulSoup, Comment, NavigableString
 register = template.Library()
 
 
+@register.filter(name='notags')
+@stringfilter
+def notags(values):
+    return allowtags(value, allowed='')
+
+
 @register.filter(name="allowtags")
 @stringfilter
 def allowtags(value, allowed=None):
