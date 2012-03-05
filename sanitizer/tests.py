@@ -5,12 +5,22 @@ unittest). These will both pass when you run "manage.py test".
 Replace these with more appropriate tests for your application.
 """
 
-from django.test import TestCase
+if __name__ == '__main__':
+    from unittest import TestCase
+else:
+    from django.test import TestCase
 
 
-from sanitizer.templatetags.sanitizer import allowtags
+from sanitizer.templatetags.sanitizer import allowtags, TAG_DEF
 
 class SanitizerTest(TestCase):
+
+    def test_tag_def(self):
+        matches = list(TAG_DEF.finditer('a:href[]'))
+        t, a, c = matches[0].groups()
+        self.assertEqual('a', t)
+        self.assertEqual('href', a)
+        self.assertEqual('', c)
 
     def test_remove_not_allowed(self):
 
@@ -62,3 +72,14 @@ class SanitizerTest(TestCase):
         self.assertEqual(
             allowtags('<<script></script>script>test<<script></script>script>'),
             '&lt;script&gt;test&lt;script&gt;')
+
+    def test_nested_hosting(self):
+        self.assertEqual(
+            allowtags('<x><z>OK</z> <y>NESTED</y> POST</x>',
+                'x[z] y z'),
+            '<x><z>OK</z> </x><y>NESTED</y><x> POST</x>')
+
+
+if __name__ == '__main__':
+    import unittest
+    unittest.main()

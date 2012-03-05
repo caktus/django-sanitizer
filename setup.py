@@ -4,7 +4,7 @@ from distutils.core import setup
 
 
 setup(name="django-sanitizer",
-      version="0.2",
+      version="0.3",
       description="Django template filter application for sanitizing user submitted HTML",
       author="Calvin Spealman",
       url="http://github.com/caktus/django-sanitizer",
