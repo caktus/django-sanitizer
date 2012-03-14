@@ -21,3 +21,10 @@ In your templates, sanitizing is easy.
     {{ user_comment|allowtags:"b i"|safe }}
 
 Disallowed tags or attributes are simply removed.
+
+In some cases, it is useful to disallow a tag, but to convert it to something
+safe, rather than stripping it entirely. For example, you might not want to
+allow <h1> tags, and want to "quiet" them into <h2> tags.
+
+    {{ body|maptags:"h1=h2 h2=h3 h4=h5" }}
+
