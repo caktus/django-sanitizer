@@ -111,7 +111,10 @@ def allowtags(value, allowed=None, callback=None):
                 parent_index = parent.parent.index(parent)
                 def tag_siblings():
                     i = parent.index(tag) + 1
-                    next_sibling = parent.contents[i]
+                    try:
+                        next_sibling = parent.contents[i]
+                    except IndexError:
+                        next_sibling = None
                     while next_sibling is not None:
                         yield (i - 1, next_sibling)
                         try:
